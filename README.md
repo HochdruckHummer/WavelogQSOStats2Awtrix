@@ -27,6 +27,7 @@ cd WavelogQSOStats2Awtrix
 npm install
 ```
 3. Configure the application
+   
 Create a config.json in the project folder:
 ```
 {
