@@ -12,7 +12,8 @@ Built with Node.js, Express, and simple web interface
 ## 🖥️ Prerequisites
 * Wavelog account with API access (Wavelog WP API)
 
-* Ulanzi TC001 Pixel-Clock [[Ulanzi TC001 Pixel-Clock](https://geni.us/ulanzi-pixelclock)] flashed with [[Awtrix firmware](https://github.com/Blueforcer/awtrix3)] 
+* Ulanzi TC001 Pixel-Clock [[Ulanzi TC001 Pixel-Clock](https://geni.us/ulanzi-pixelclock)] flashed with [[Awtrix firmware](https://github.com/Blueforcer/awtrix3)]
+* AmateurRadioIcons from this repository uploaded to the Awtrix' /ICON/ folder
 
 * Node.js v24+ installed on your computer or server
 ## 🚀 Installation and Setup
@@ -35,7 +36,7 @@ Create a config.json in the project folder:
   "wavelogBaseUrl": "https://wavelogurl.com",
   "apiKey": "YOUR_API_KEY_HERE",
   "stationIds": ["01", "11"],
-  "awtrixUrl": "http://AWTRIX_IP",
+  "awtrixUrl": "AWTRIX_IP",
   "fetchInterval": 300000,
   "pushInterval": 30000,
   "displayItems": [
@@ -56,7 +57,7 @@ Create a config.json in the project folder:
 ## 🖥️ Running the App
 Start the Node.js server:
 ```
-node app.js
+node WavelogQSOStats2Awtrix.js
 ```
 Open in your browser:
 http://localhost:3000
@@ -85,7 +86,7 @@ If you like, you can send me a beer via PayPal:
 
 ## 🛠️ Notes
 Awtrix must be flashed with the firmware linked above
-Icons must exist on the Awtrix device
+Icons must exist on the Awtrix device, see Folder "AmateurRadioIcons" in this repository
 The app caches the latest QSO stats and cycles them without re-fetching on every push
 
 ## 📜 License
