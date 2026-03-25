@@ -12,7 +12,7 @@ Built with Node.js, Express, and simple web interface
 ## 🖥️ Prerequisites
 * Wavelog account with API access (Wavelog WP API)
 
-* Ulanzi TC001 Pixel-Clock [[Ulanzi TC001 Pixel-Clock](https://geni.us/ulanzi-pixelclock)] flashed with [[Awtrix firmware](https://github.com/Blueforcer/awtrix3)]
+* Ulanzi TC001 Pixel-Clock [Ulanzi TC001 Pixel-Clock](https://geni.us/ulanzi-pixelclock) flashed with [Awtrix firmware](https://github.com/Blueforcer/awtrix3)]
 * [AmateurRadioIcons from this repository](https://github.com/HochdruckHummer/WavelogQSOStats2Awtrix/tree/main/AmateurRadioIcons)] uploaded to the Awtrix' /ICON/ folder
 
 * Node.js v24+ installed on your computer or server
