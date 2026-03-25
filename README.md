@@ -11,7 +11,7 @@ Test API connection and view all current QSO totals
 Built with Node.js, Express, and simple web interface
 ## 🖥️ Prerequisites
 Wavelog account with API access (Wavelog WP API)
-Ulanzi TC001 Pixel-Clock [Link to hardware placeholder]
+Ulanzi TC001 Pixel-Clock [[Link to hardware placeholder](https://geni.us/ulanzi-pixelclock)]
 Awtrix LED Clock flashed with Awtrix firmware
 Node.js v24+ installed on your computer or server
 ## 🚀 Installation and Setup
