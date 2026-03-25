@@ -10,10 +10,11 @@ Automatic caching of data and cyclic push to Awtrix
 Test API connection and view all current QSO totals
 Built with Node.js, Express, and simple web interface
 ## 🖥️ Prerequisites
-Wavelog account with API access (Wavelog WP API)
-Ulanzi TC001 Pixel-Clock [[Ulanzi TC001 Pixel-Clock](https://geni.us/ulanzi-pixelclock)]
-Awtrix LED Clock flashed with Awtrix firmware
-Node.js v24+ installed on your computer or server
+* Wavelog account with API access (Wavelog WP API)
+
+* Ulanzi TC001 Pixel-Clock [[Ulanzi TC001 Pixel-Clock](https://geni.us/ulanzi-pixelclock)] flashed with [[Awtrix firmware](https://github.com/Blueforcer/awtrix3)] 
+
+* Node.js v24+ installed on your computer or server
 ## 🚀 Installation and Setup
 1. Clone the repository
 ```   
