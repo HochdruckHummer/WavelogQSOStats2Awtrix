@@ -16,13 +16,16 @@ Awtrix LED Clock flashed with Awtrix firmware
 Node.js v24+ installed on your computer or server
 ## 🚀 Installation and Setup
 1. Clone the repository
-   
+```   
 git clone https://github.com/HochdruckHummer/WavelogQSOStats2Awtrix.git
-
+```
+```
 cd WavelogQSOStats2Awtrix
-
+```
 2. Install dependencies
+```
 npm install
+```
 3. Configure the application
 Create a config.json in the project folder:
 ```
