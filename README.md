@@ -21,20 +21,29 @@ git clone https://github.com/HochdruckHummer/WavelogQSOStats2Awtrix.git
 
 cd WavelogQSOStats2Awtrix
 
-3. Install dependencies
+2. Install dependencies
 npm install
-4. Configure the application
+3. Configure the application
 Create a config.json in the project folder:
 {
+
   "wavelogBaseUrl": "https://wavelogurlexample.com",
+  
   "apiKey": "YOUR_API_KEY_HERE",
+  
   "stationIds": ["01", "11"],
+  
   "awtrixUrl": "http://AWTRIX_IP",
+  
   "fetchInterval": 300000,
+  
   "pushInterval": 30000,
+  
   "displayItems": [
+  
     { "key": "totalQso", "label": "QSOs", "icon": "radio", "enabled": true, "duration": 10 },
     { "key": "FT8", "label": "FT8/4", "icon": "wifi", "enabled": true, "duration": 10 }
+    
   ]
 }
 wavelogBaseUrl: Only the base URL of your Wavelog site (the app appends /index.php/api/get_wp_stats automatically)
