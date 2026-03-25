@@ -1,7 +1,7 @@
 # WavelogQSOStats2Awtrix – Display your Wavelog QSO Stats on Awtrix
 WavelogQSOStats2Awtrix is a Node.js application that fetches your Wavelog QSO statistics and displays them on an Awtrix LED clock. Configure station IDs, API key, modes, icons, and display duration via a responsive web interface. Automatically updates stats, caches data, and cycles them on Awtrix for real-time ham radio monitoring.
 
-##✨ Features
+## ✨ Features
 Fetch Wavelog QSO statistics using WordPress API endpoint
 Display Total QSOs, QSOs this year, SSB, FM, CW, FT8/FT4, PSK, JS8, and total digital modes
 Configurable modes and icons per mode (e.g., handheld radio icon for FM)
@@ -9,12 +9,12 @@ Responsive web interface for configuration and mode management
 Automatic caching of data and cyclic push to Awtrix
 Test API connection and view all current QSO totals
 Built with Node.js, Express, and simple web interface
-##🖥️ Prerequisites
+## 🖥️ Prerequisites
 Wavelog account with API access (Wavelog WP API)
 Ulanzi TC001 Pixel-Clock [Link to hardware placeholder]
 Awtrix LED Clock flashed with Awtrix firmware
 Node.js v24+ installed on your computer or server
-##🚀 Installation and Setup
+## 🚀 Installation and Setup
 1. Clone the repository
 git clone https://github.com/HochdruckHummer/WavelogQSOStats2Awtrix.git
 cd WavelogQSOStats2Awtrix
