@@ -20,6 +20,7 @@ Node.js v24+ installed on your computer or server
 git clone https://github.com/HochdruckHummer/WavelogQSOStats2Awtrix.git
 
 cd WavelogQSOStats2Awtrix
+
 3. Install dependencies
 npm install
 4. Configure the application
