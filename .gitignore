@@ -1,0 +1,6 @@
+# Node dependencies – generated via npm install
+node_modules/
+ 
+# If you want to keep your personal config out of git,
+# copy config.json to config.local.json and use that instead.
+# The default config.json (with empty values) is intentionally tracked.
