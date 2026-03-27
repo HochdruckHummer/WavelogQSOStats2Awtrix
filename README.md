@@ -9,7 +9,10 @@ Responsive web interface for configuration and mode management
 Automatic caching of data and cyclic push to Awtrix
 Test API connection and view all current QSO totals
 Upload of suitable Icons to the Awtrix device directly from the web interface
-Built with Node.js, Express, and simple web interface
+Built with Node.js, Express, and simple web interface:
+
+<img width="1313" height="736" alt="Screenshot WavelogQSOStats2Awtrix" src="https://github.com/user-attachments/assets/d497979a-0b0e-45a7-8499-b7c3b147b948" />
+
 
 ## 🖥️ Prerequisites
 * Wavelog account with API access (Wavelog WP API)
