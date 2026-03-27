@@ -106,8 +106,18 @@ app.post('/api/save', (req, res) => {
     }));
   }
 
+  // Write only the known fields – strips any legacy keys from old versions
+  const clean = {
+    wavelogBaseUrl: config.wavelogBaseUrl,
+    apiKey:         config.apiKey,
+    stationIds:     config.stationIds,
+    awtrixUrl:      config.awtrixUrl,
+    fetchInterval:  config.fetchInterval,
+    displayItems:   config.displayItems,
+  };
+
   try {
-    saveConfig(config);
+    saveConfig(clean);
     res.json({ success: true });
   } catch (err) {
     console.error("Save config failed:", err.message);
