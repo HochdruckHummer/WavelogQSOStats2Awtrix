@@ -1,5 +1,5 @@
 # WavelogQSOStats2Awtrix – Display your Wavelog QSO Stats on Awtrix
-WavelogQSOStats2Awtrix is a Node.js application that fetches your Wavelog QSO statistics and displays them on an Awtrix LED clock. Configure station IDs, API key, modes, icons, and display duration via a responsive web interface. Automatically updates stats, caches data, and cycles them on Awtrix for real-time ham radio monitoring.
+WavelogQSOStats2Awtrix is a Node.js application that fetches your Wavelog QSO statistics and displays them on an Awtrix LED clock. Configure station IDs, API key, modes, icons, and display duration via a responsive web interface. Automatically updates stats, caches data, and cycles them on Awtrix for near-real-time log monitoring.
 
 ## ✨ Features
 Fetch Wavelog QSO statistics using WordPress API endpoint
