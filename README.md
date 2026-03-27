@@ -210,7 +210,7 @@ Icon names used in the default configuration:
 
 ## 🛠️ Notes
 
-* Awtrix must be running firmware v1.0 or newer – see [Awtrix3 on GitHub](https://github.com/Blueforcer/awtrix3)
+* Awtrix must be running firmware v0.96 or newer – see [Awtrix3 on GitHub](https://github.com/Blueforcer/awtrix3)
 * The Wavelog API key needs at least read access; a read-only key is sufficient
 * Multiple station IDs are supported – stats are summed across all configured stations
 * The `digi` total is calculated as FT8 + FT4 + PSK + JS8 + RTTY
