@@ -1,15 +1,15 @@
-# WavelogQSOStats2Awtrix – Display your Wavelog QSO Stats on Awtrix
+# WavelogQSOStats2Awtrix – Display your Wavelog QSO Stats on Awtrix Pixel clocks
 WavelogQSOStats2Awtrix is a Node.js application that fetches your Wavelog QSO statistics and displays them on an Awtrix LED clock. Configure station IDs, API key, modes, icons, and display duration via a responsive web interface. Automatically updates stats, caches data, and cycles them on Awtrix for near-real-time log monitoring.
 
 ## ✨ Features
-Fetch Wavelog QSO statistics using WordPress API endpoint
-Display Total QSOs, QSOs this year, SSB, FM, CW, FT8, FT4, sum of FT8/FT4, PSK, JS8, and total digital modes
-Configurable modes and icons per mode (e.g., handheld radio icon for FM)
-Responsive web interface for configuration and mode management
-Automatic caching of data and cyclic push to Awtrix
-Test API connection and view all current QSO totals
-Upload of suitable Icons to the Awtrix device directly from the web interface
-Built with Node.js, Express, and simple web interface:
+* Fetch Wavelog QSO statistics using WordPress API endpoint
+* Display Total QSOs, QSOs this year, SSB, FM, CW, FT8, FT4, sum of FT8/FT4, PSK, JS8, and total digital modes
+* Configurable modes and icons per mode (e.g., handheld radio icon for FM)
+* Responsive web interface for configuration and mode management
+* Automatic caching of data and cyclic push to Awtrix
+* Test API connection and view all current QSO totals in web interface
+* Upload of suitable Icons to the Awtrix device directly from the web interface
+* Built with Node.js, Express, and simple web interface:
 
 <img width="1313" height="736" alt="Screenshot WavelogQSOStats2Awtrix" src="https://github.com/user-attachments/assets/d497979a-0b0e-45a7-8499-b7c3b147b948" />
 
@@ -163,15 +163,15 @@ Open in your browser:
 http://localhost:3000
 
 ## Web Interface Features
-Edit Configuration: Set Wavelog URL, API key, station IDs, Awtrix IP
-Manage Modes: Enable/disable modes, assign icons, set display duration
-Test API: Verify connection and fetch current QSO totals, displayed under the test button
-Upload of suitable icons to the Awtrix device directly from the web interface to the Awtrix' /ICON/ folder
+* Edit Configuration: Set Wavelog URL, API key, station IDs, Awtrix IP
+* Manage Modes: Enable/disable modes, assign icons, set display duration
+* Test API: Verify connection and fetch current QSO totals, displayed under the test button
+* Upload of suitable icons to the Awtrix device directly from the web interface to the Awtrix' /ICON/ folder
 
 ## 🔁 Automatic Updates
-The app fetches data from Wavelog at the interval specified (fetchInterval)
-Displays are pushed to Awtrix cyclically every pushInterval
-Each enabled mode is displayed for its configured duration with its assigned icon
+* The app fetches data from Wavelog at the interval specified (fetchInterval)
+* Modes are pushed to Awtrix cyclically every pushInterval
+* Each enabled mode is displayed for its configured duration with its assigned icon
 
 ##  Support the development
 
@@ -188,9 +188,8 @@ If you like, you can send me a beer via PayPal:
 </a>
 
 ## 🛠️ Notes
-Awtrix must be flashed with the firmware linked above
-Icons must exist on the Awtrix device, see Folder "AmateurRadioIcons" in this repository. Make shure to send them to your Awtrix device with only one click from the web interface.
-The app caches the latest QSO stats and cycles them without re-fetching them on every push.
+* Awtrix must be flashed with the firmware linked above
+* Icons must exist on the Awtrix device, see Folder "AmateurRadioIcons" in this repository. Make shure to send them to your Awtrix device with only one click from the web interface.
 
 ## 📜 License
 This project is licensed under the MIT License.
