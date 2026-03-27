@@ -191,7 +191,7 @@ If you like, you can send me a beer via PayPal:
 ## 🛠️ Notes
 Awtrix must be flashed with the firmware linked above
 Icons must exist on the Awtrix device, see Folder "AmateurRadioIcons" in this repository. Make shure to send them to your Awtrix device with only one click from the web interface.
-The app caches the latest QSO stats and cycles them without re-fetching them on every push
+The app caches the latest QSO stats and cycles them without re-fetching them on every push.
 
 ## 📜 License
 This project is licensed under the MIT License.
