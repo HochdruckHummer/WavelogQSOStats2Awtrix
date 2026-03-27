@@ -140,7 +140,7 @@ Setting up everything in the web interface will automatically create a config.js
       "duration": 10,
       "enabled": true
     }
-  ],
+  ]
 }
 ```
 
