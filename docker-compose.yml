@@ -1,11 +1,9 @@
 services:
   wavelog-awtrix:
-    build: .
-    # Alternatively, pull directly from GitHub Container Registry (once published):
-    # image: ghcr.io/hochdruckhummer/wavelogqsostats2awtrix:latest
+    image: ghcr.io/hochdruckhummer/wavelogqsostats2awtrix:latest
     container_name: wavelog-awtrix
-    restart: unless-stopped          # auto-restart on crash or reboot
+    restart: unless-stopped
     ports:
-      - "3000:3000"                  # Web UI: http://localhost:3000
+      - "3000:3000"
     volumes:
-      - ./config.json:/app/config.json   # persist config outside the container
+      - ./config.json:/app/config.json
