@@ -141,10 +141,6 @@ Setting up everything in the web interface will automatically create a config.js
       "enabled": true
     }
   ],
-  "pushInterval": 30000,
-  "wavelogUrl": "wavelog.dl8ydp.de",
-  "stationId": "11",
-  "fetchIntervalMinutes": 10
 }
 ```
 
