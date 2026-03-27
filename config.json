@@ -1,0 +1,21 @@
+{
+  "wavelogBaseUrl": "",
+  "apiKey": "",
+  "stationIds": [],
+  "awtrixUrl": "",
+  "fetchInterval": 300,
+  "displayItems": [
+    { "key": "totalQso",     "text1": "Total",   "text2": "QSOs", "icon": "wavelog",   "duration": 10, "enabled": true  },
+    { "key": "totalQsoYear", "text1": "Year",    "text2": "QSOs", "icon": "year",      "duration": 10, "enabled": true  },
+    { "key": "FT8",          "text1": "FT8",     "text2": "QSOs", "icon": "ft8",       "duration": 10, "enabled": true  },
+    { "key": "FT4",          "text1": "FT4",     "text2": "QSOs", "icon": "ft4",       "duration": 10, "enabled": true  },
+    { "key": "ft8ft4",       "text1": "FT8/FT4", "text2": "QSOs", "icon": "ft8ft4",   "duration": 10, "enabled": false },
+    { "key": "CW",           "text1": "CW",      "text2": "QSOs", "icon": "key",       "duration": 10, "enabled": true  },
+    { "key": "SSB",          "text1": "SSB",     "text2": "QSOs", "icon": "ssbwave",   "duration": 10, "enabled": true  },
+    { "key": "FM",           "text1": "FM",      "text2": "QSOs", "icon": "radioblue", "duration": 10, "enabled": false },
+    { "key": "PSK",          "text1": "PSK",     "text2": "QSOs", "icon": "psk31",     "duration": 10, "enabled": false },
+    { "key": "JS8",          "text1": "JS8",     "text2": "QSOs", "icon": "js8",       "duration": 10, "enabled": false },
+    { "key": "RTTY",         "text1": "RTTY",    "text2": "QSOs", "icon": "rtty",      "duration": 10, "enabled": false },
+    { "key": "digi",         "text1": "Digi",    "text2": "QSOs", "icon": "digi",      "duration": 10, "enabled": false }
+  ]
+}
