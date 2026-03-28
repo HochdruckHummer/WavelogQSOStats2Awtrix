@@ -18,6 +18,8 @@ WavelogQSOStats2Awtrix is a Node.js application that fetches your Wavelog QSO st
 * Auto-restart on crash, config is re-read on every cycle – no restart needed after changes
 * Built with Node.js and Express
 
+https://youtu.be/kS_QYKCJ7ps
+
 ---
 
 ## 🖥️ Prerequisites
