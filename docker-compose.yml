@@ -1,9 +1,0 @@
-services:
-  wavelog-awtrix:
-    image: ghcr.io/hochdruckhummer/wavelogqsostats2awtrix:latest
-    container_name: wavelog-awtrix
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./config.json:/app/config.json
