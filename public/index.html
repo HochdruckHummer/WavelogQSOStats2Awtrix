@@ -47,12 +47,15 @@ header {
 .layout {
   display: grid; grid-template-columns: 300px 1fr; gap: 0;
   height: calc(100vh - 73px);
+  overflow: hidden;                /* layout itself does not scroll */
 }
 aside {
-  border-right: 1px solid var(--border); overflow-y: auto;
+  border-right: 1px solid var(--border);
+  overflow-y: auto;                /* sidebar scrolls independently */
+  height: 100%;                   /* fill the full layout height */
   padding: 16px 14px; display: flex; flex-direction: column; gap: 12px;
 }
-main { overflow-y: auto; padding: 20px 24px; }
+main { overflow-y: auto; height: 100%; padding: 20px 24px; }
 
 .card { background:var(--surface); border:1px solid var(--border); border-radius:10px; overflow:hidden; }
 .card-head {
