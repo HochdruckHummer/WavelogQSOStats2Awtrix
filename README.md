@@ -10,11 +10,11 @@ WavelogQSOStats2Awtrix is a Node.js application that fetches your Wavelog QSO st
 
 * Fetch Wavelog QSO statistics using the Wavelog WP API
 * Display Total QSOs, QSOs this year, FT8, FT4, FT8/FT4 combined, CW, SSB, FM, PSK, JS8, RTTY, and a configurable Digi total
-* Configurable modes and icons per mode
+* Configurable modes, icons and background effects per mode
 * Responsive web interface for configuration and mode management
 * Test API connection and view all current QSO totals directly in the web interface
 * Upload amateur radio icons to the Awtrix device with a single click
-* Clear stale Awtrix apps with a single click
+* Clear stale Awtrix apps at startup and on every push of a new configuration
 * Auto-restart on crash, config is re-read on every cycle – no restart needed after changes
 * Built with Node.js and Express
 
@@ -168,11 +168,10 @@ Example `config.json`:
 |---|---|
 | **Save Configuration** | Saves all settings to `config.json` |
 | **Test Wavelog API** | Fetches current stats and displays them in the mode table |
-| **Push to Awtrix Now** | Immediately pushes current stats to the clock |
+| **Save & Push to Awtrix** | Immediately pushes current stats to the clock, Removes all `wavelog_*` apps from the clock, including stale ones from older versions |
 | **Upload Icons to Awtrix** | Uploads all icons from `AmateurRadioIcons/` to the clock's `/ICONS/` folder |
-| **Clear all Awtrix Apps** | Removes all `wavelog_*` apps from the clock, including stale ones from older versions |
 
-The mode table shows all configured modes with their labels, icon name, display duration, on/off toggle, and the live QSO count after a test or push. Rows can be **dragged to reorder** the display sequence on the clock.
+The mode table shows all configured modes with their labels, icon name, display duration, background effects, on/off toggle, and the live QSO count after a test or push. Rows can be **dragged to reorder** the display sequence on the clock.
 
 ---
 
