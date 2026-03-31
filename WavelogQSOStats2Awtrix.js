@@ -18,18 +18,18 @@ const defaultConfig = {
   awtrixUrl: "",
   fetchInterval: 600,
   displayItems: [
-    { key: "totalQso",     text1: "Total",    text2: "QSOs", icon: "wavelog",  duration: 10, enabled: true  },
-    { key: "totalQsoYear", text1: "Year",     text2: "QSOs", icon: "year",  duration: 10, enabled: true  },
-    { key: "FT8",          text1: "FT8",      text2: "QSOs", icon: "ft8", duration: 10, enabled: false },
-    { key: "FT4",          text1: "FT4",      text2: "QSOs", icon: "ft4", duration: 10, enabled: false },
-    { key: "ft8ft4",       text1: "FT8/FT4",  text2: "QSOs", icon: "ft8ft4", duration: 10, enabled: true  },
-    { key: "CW",           text1: "CW",       text2: "QSOs", icon: "key", duration: 10, enabled: true  },
-    { key: "SSB",          text1: "SSB",      text2: "QSOs", icon: "ssbwave", duration: 10, enabled: true  },
-    { key: "FM",           text1: "FM",       text2: "QSOs", icon: "radioblue", duration: 10, enabled: false },
-    { key: "PSK",          text1: "PSK",      text2: "QSOs", icon: "psk31", duration: 10, enabled: false },
-    { key: "JS8",          text1: "JS8",      text2: "QSOs", icon: "js8", duration: 10, enabled: false },
-    { key: "RTTY",         text1: "RTTY",     text2: "QSOs", icon: "rtty", duration: 10, enabled: false },
-    { key: "digi",         text1: "Digi",     text2: "QSOs", icon: "digi", duration: 10, enabled: false }
+    { key: "totalQso",     text1: "Total",    text2: "QSOs", icon: "wavelog",  duration: 10, enabled: true,  effect: "" },
+    { key: "totalQsoYear", text1: "Year",     text2: "QSOs", icon: "year",     duration: 10, enabled: true,  effect: "" },
+    { key: "FT8",          text1: "FT8",      text2: "QSOs", icon: "ft8",      duration: 10, enabled: false, effect: "" },
+    { key: "FT4",          text1: "FT4",      text2: "QSOs", icon: "ft4",      duration: 10, enabled: false, effect: "" },
+    { key: "ft8ft4",       text1: "FT8/FT4",  text2: "QSOs", icon: "ft8ft4",   duration: 10, enabled: true,  effect: "" },
+    { key: "CW",           text1: "CW",       text2: "QSOs", icon: "key",      duration: 10, enabled: true,  effect: "" },
+    { key: "SSB",          text1: "SSB",      text2: "QSOs", icon: "ssbwave",  duration: 10, enabled: true,  effect: "" },
+    { key: "FM",           text1: "FM",       text2: "QSOs", icon: "radioblue",duration: 10, enabled: false, effect: "" },
+    { key: "PSK",          text1: "PSK",      text2: "QSOs", icon: "psk31",    duration: 10, enabled: false, effect: "" },
+    { key: "JS8",          text1: "JS8",      text2: "QSOs", icon: "js8",      duration: 10, enabled: false, effect: "" },
+    { key: "RTTY",         text1: "RTTY",     text2: "QSOs", icon: "rtty",     duration: 10, enabled: false, effect: "" },
+    { key: "digi",         text1: "Digi",     text2: "QSOs", icon: "digi",     duration: 10, enabled: false, effect: "" }
   ]
 };
 
@@ -47,18 +47,22 @@ function loadConfig() {
     const merged = Object.assign({}, defaultConfig, loaded);
 
     // Valid keys are exactly what defaultConfig defines — nothing else
-    const validKeys = new Set(defaultConfig.displayItems.map(d => d.key));
+    const validKeys   = new Set(defaultConfig.displayItems.map(d => d.key));
+    const defaultsByKey = Object.fromEntries(defaultConfig.displayItems.map(d => [d.key, d]));
 
-    // 1. Keep only items whose key is in the valid set (drops old/renamed keys like ft4ft8, cw)
+    // 1. Keep saved items in SAVED ORDER, strip unknown keys
     const kept = (loaded.displayItems || []).filter(i => validKeys.has(i.key));
 
-    // 2. Preserve default order; use saved values where available, else fall back to defaults
-    const keptByKey = Object.fromEntries(kept.map(i => [i.key, i]));
-    merged.displayItems = defaultConfig.displayItems.map(def =>
-      keptByKey[def.key]
-        ? { ...def, ...keptByKey[def.key] }  // saved values override defaults
-        : { ...def }                          // new entry, use defaults
-    );
+    // 2. Merge each saved item with its defaults (saved values win)
+    const merged_items = kept.map(saved => ({ ...defaultsByKey[saved.key], ...saved }));
+
+    // 3. Append any default items that are missing from the saved list (new features)
+    const keptKeys = new Set(kept.map(i => i.key));
+    defaultConfig.displayItems.forEach(def => {
+      if (!keptKeys.has(def.key)) merged_items.push({ ...def });
+    });
+
+    merged.displayItems = merged_items;
 
     return merged;
   } catch (err) {
@@ -98,11 +102,12 @@ app.post('/api/save', (req, res) => {
     // Replace displayItems entirely (preserves re-ordering from UI)
     config.displayItems = body.displayItems.map(item => ({
       key:      item.key,
-      text1:    (item.text1 || item.key).trim(),
-      text2:    (item.text2 || "QSOs").trim(),
+      text1:    (item.text1 ?? "").trim(),
+      text2:    (item.text2 ?? "").trim(),
       icon:     (item.icon || "").trim(),
       duration: Math.max(1, Number(item.duration) || 10),
-      enabled:  item.enabled !== false
+      enabled:  item.enabled !== false,
+      effect:   (item.effect || "").trim()
     }));
   }
 
@@ -150,6 +155,7 @@ app.post('/api/push', async (req, res) => {
   }
   try {
     const stats = await fetchStats(config);
+    await clearAllWavelogApps(config);
     const pushed = await pushToAwtrix(config, stats);
     res.json({ success: true, message: `Pushed ${pushed} item(s) to Awtrix ✅`, stats });
   } catch (err) {
@@ -164,20 +170,28 @@ app.post('/api/clear-apps', async (req, res) => {
     return res.status(400).json({ success: false, message: "Awtrix URL not configured" });
   }
 
-  // All current keys + every key that ever existed in older versions of this app
-  const allKnownKeys = [
-    // current
+  // Build full list of app names to delete:
+  // 1. Legacy flat names (wavelog_CW, wavelog_FM, …)
+  // 2. New numbered names (wavelog_01_totalQso … wavelog_20_*)
+  const baseKeys = [
     'totalQso', 'totalQsoYear', 'FT8', 'FT4', 'ft8ft4',
     'CW', 'SSB', 'FM', 'PSK', 'JS8', 'RTTY', 'digi',
-    // old/renamed keys from previous versions
     'morse', 'cw', 'ssb', 'fm', 'psk', 'js8', 'rtty',
     'ft8', 'ft4', 'total', 'year', 'totalqso', 'totalqsoyear',
   ];
 
+  // numbered slots: wavelog_01_<key> … wavelog_20_<key> for all base keys
+  const numberedNames = [];
+  for (let pos = 1; pos <= 20; pos++) {
+    const p = String(pos).padStart(2, '0');
+    baseKeys.forEach(k => numberedNames.push(`${p}_${k}`));
+  }
+
+  const allKnownKeys = [...baseKeys, ...numberedNames];
+
   const results = [];
   for (const key of allKnownKeys) {
     try {
-      // Sending an empty body to /api/custom?name=<app> deletes the app from Awtrix
       await axios.post(
         `http://${config.awtrixUrl}/api/custom?name=wavelog_${key}`,
         {},
@@ -185,7 +199,6 @@ app.post('/api/clear-apps', async (req, res) => {
       );
       results.push({ key, ok: true });
     } catch (err) {
-      // 404 = app didn't exist, that's fine
       if (err.response?.status === 404) {
         results.push({ key, ok: true, note: 'not present' });
       } else {
@@ -335,34 +348,73 @@ async function pushToAwtrix(config, stats) {
   let pushedCount = 0;
 
   for (const item of activeItems) {
-    const value = stats[item.key] ?? 0;
-    const text  = `${item.text1} ${value} ${item.text2}`;
+    const appName = `wavelog_${item.key}`;
+    const value   = stats[item.key] ?? 0;
+    const text    = [item.text1, value, item.text2].filter(p => p !== '').join(' ');
 
     try {
       await axios.post(
-        `http://${config.awtrixUrl}/api/custom?name=wavelog_${item.key}`,
+        `http://${config.awtrixUrl}/api/custom?name=${appName}`,
         {
           text,
           icon:     item.icon || '',
           color:    "#FFFFFF",
           duration: item.duration || 10,
-          lifetime: (config.fetchInterval || 600) * 2,   // auto-expire if not refreshed
+          lifetime: (config.fetchInterval || 600) * 2,
+          ...(item.effect ? { effect: item.effect } : {}),
         },
         { timeout: 5000 }
       );
-      console.log(`[Awtrix] Pushed: ${text} (icon: ${item.icon})`);
+      console.log(`[Awtrix] Pushed: ${appName} → ${text}`);
       pushedCount++;
     } catch (err) {
-      console.error(`[Awtrix] Failed to push "${item.key}":`, err.message);
+      console.error(`[Awtrix] Failed to push "${appName}":`, err.message);
     }
   }
   return pushedCount;
+}
+
+// GET /api/effects  – fetch available effect names from Awtrix
+app.get('/api/effects', async (req, res) => {
+  const config = loadConfig();
+  if (!config.awtrixUrl) {
+    return res.status(400).json({ success: false, message: "Awtrix URL not configured" });
+  }
+  try {
+    const response = await axios.get(`http://${config.awtrixUrl}/api/effects`, { timeout: 5000 });
+    res.json(response.data);
+  } catch (err) {
+    console.error("[Effects] Failed to fetch effects:", err.message);
+    res.status(500).json({ success: false, message: "Could not reach Awtrix: " + err.message });
+  }
+});
+
+// ─── Startup Clear Helper ────────────────────────────────────────────────────
+
+async function clearAllWavelogApps(config) {
+  const keys = [
+    'totalQso', 'totalQsoYear', 'FT8', 'FT4', 'ft8ft4',
+    'CW', 'SSB', 'FM', 'PSK', 'JS8', 'RTTY', 'digi',
+  ];
+  for (const key of keys) {
+    try {
+      await axios.post(
+        `http://${config.awtrixUrl}/api/custom?name=wavelog_${key}`,
+        {},
+        { timeout: 3000 }
+      );
+    } catch (err) {
+      // ignore – app may not exist yet
+    }
+  }
+  console.log("[Loop] Stale apps cleared.");
 }
 
 // ─── Background Push Loop ─────────────────────────────────────────────────────
 
 async function awtrixPushLoop() {
   console.log("[Loop] Awtrix push loop started");
+  let firstRun = true;
 
   // eslint-disable-next-line no-constant-condition
   while (true) {
@@ -376,6 +428,15 @@ async function awtrixPushLoop() {
 
     try {
       const stats = await fetchStats(config);
+
+      // On first run after (re)start: clear all wavelog apps first so stale
+      // apps from a previous run are removed and order is correct from the start.
+      if (firstRun) {
+        console.log("[Loop] First run – clearing stale Awtrix apps…");
+        await clearAllWavelogApps(config);
+        firstRun = false;
+      }
+
       await pushToAwtrix(config, stats);
     } catch (err) {
       console.error("[Loop] Cycle error:", err.message);
