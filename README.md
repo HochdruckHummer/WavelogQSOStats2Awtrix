@@ -48,9 +48,9 @@ cd WavelogQSOStats2Awtrix
 npm install
 ```
 
-3. Start the app
+3. Start the app, with a password for the web interface (recommended, see [Security](#-security)):
 ```bash
-node WavelogQSOStats2Awtrix.js
+WEB_PASSWORD=your-password node WavelogQSOStats2Awtrix.js
 ```
 
 4. Open the web interface in your browser and configure everything there:
@@ -72,17 +72,21 @@ git clone https://github.com/HochdruckHummer/WavelogQSOStats2Awtrix.git
 cd WavelogQSOStats2Awtrix
 ```
 
-2. Start the container
+2. Open `docker-compose.yml` and replace `change-me` with your own password for the web interface
+
+3. Start the container
 ```bash
 docker compose up -d
 ```
 
-3. Open the web interface:
+4. Open the web interface and log in with user `admin` and your password:
 ```
 http://localhost:3000
 ```
 
-The `config.json` is stored on your host machine and survives container updates.
+The `config.json` is stored in the `./data` folder on your host machine and survives container updates.
+
+> **Upgrading from an older version?** Old compose files mounted `./config.json:/app/config.json` directly. This still works, but switching to the `./data:/app/data` folder mount is recommended: move your `config.json` into `./data/` and update the `volumes:` line.
 
 To update to the latest version later:
 ```bash
@@ -105,12 +109,16 @@ services:
     restart: unless-stopped
     ports:
       - "3000:3000"
+    environment:
+      # Login for the web UI (user "admin") – change this password!
+      WEB_PASSWORD: "change-me"
     volumes:
-      - ./config.json:/app/config.json
+      # config.json is stored in this folder on the NAS
+      - ./data:/app/data
 ```
 
-4. Click **Deploy the stack**
-5. Open the web interface on port 3000 of your NAS:
+4. Replace `change-me` with your own password and click **Deploy the stack**
+5. Open the web interface on port 3000 of your NAS and log in with user `admin`:
 ```
 http://<your-nas-ip>:3000
 ```
@@ -159,6 +167,28 @@ Example `config.json`:
 ```
 
 > **Note:** The default `config.json` (with empty values) is included in the repository so Docker and Portainer users don't need to create it manually. If you want to keep your personal configuration out of git, add `config.json` to your local `.gitignore`.
+
+---
+
+## 🔐 Security
+
+The web interface can change where your Wavelog API key is sent, so it should not be open to everyone on your network.
+
+| Environment variable | Default | Description |
+|---|---|---|
+| `WEB_PASSWORD` | *(empty)* | Password for the web interface (HTTP Basic Auth). If empty, **no login is required** and a warning is logged on startup |
+| `WEB_USER` | `admin` | User name for the web interface |
+| `HOST` | all interfaces | Address to listen on, e.g. `127.0.0.1` to allow access from the local machine only |
+| `PORT` | `3000` | Port of the web interface |
+| `CONFIG_FILE` | `./config.json` (Docker: `/app/data/config.json`) | Location of the configuration file |
+
+Further protections:
+
+* The saved API key is never sent back to the browser. Leave the field empty to keep it. When you change the Wavelog URL, the API key must be entered again.
+* The Wavelog URL must be an `http(s)://` URL and the Awtrix address an IP or host name (optionally with `:port`).
+* Cross-site requests from other web pages are rejected.
+* The Docker container runs as an unprivileged user.
+* Do not expose port 3000 to the internet. Use a VPN or a reverse proxy with HTTPS if you need remote access.
 
 ---
 
@@ -215,6 +245,7 @@ Icon names used in the default configuration:
 * The Wavelog API key needs at least read access; a read-only key is sufficient
 * Multiple station IDs are supported – stats are summed across all configured stations
 * The `digi` total is calculated as FT8 + FT4 + PSK + JS8 + RTTY
+* If Wavelog cannot be reached, nothing is pushed: the clock keeps showing the last values instead of zeros
 
 ---
 

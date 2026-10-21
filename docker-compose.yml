@@ -5,5 +5,9 @@ services:
     restart: unless-stopped
     ports:
       - "3000:3000"
+    environment:
+      # Login for the web UI (user "admin") – change this password!
+      WEB_PASSWORD: "change-me"
     volumes:
-      - ./config.json:/app/config.json
+      # config.json is stored in ./data on the host
+      - ./data:/app/data
