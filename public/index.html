@@ -20,22 +20,28 @@
   --sans:    'Barlow Condensed', sans-serif;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
 body {
   background: var(--bg); color: var(--text); font-family: var(--sans);
-  font-size: 16px; min-height: 100vh;
+  font-size: 16px;
+  display: flex; flex-direction: column;   /* header + layout fill the window exactly */
   background-image:
     radial-gradient(ellipse 60% 40% at 80% 10%, rgba(80,126,174,.05) 0%, transparent 60%),
     radial-gradient(ellipse 50% 30% at 10% 90%, rgba(58,100,145,.05) 0%, transparent 60%);
 }
 header {
-  display: flex; align-items: center; gap: 14px;
+  display: flex; align-items: center; flex-wrap: wrap; gap: 10px 14px;
   padding: 20px 28px 16px; border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
 }
+header img { height: 40px; width: auto; }
+header h1 { font-size: 1.3rem; font-weight: 700; letter-spacing: .04em; color: #fff; }
+header h1 span { color: var(--accent); }
 
 .status-pill {
   margin-left: auto; font-family: var(--mono); font-size: .72rem;
   padding: 4px 10px; border-radius: 20px; border: 1px solid var(--muted);
-  color: var(--muted); display: flex; align-items: center; gap: 6px;
+  color: var(--muted); display: flex; align-items: center; gap: 6px; white-space: nowrap;
 }
 .status-pill .dot { width:7px;height:7px;border-radius:50%;background:var(--muted);animation:pulse 2s infinite; }
 .status-pill.ok  { border-color:var(--accent);  color:var(--accent);  }
@@ -45,38 +51,40 @@ header {
 @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.3} }
 
 .layout {
-  display: grid; grid-template-columns: 300px 1fr; gap: 0;
-  height: calc(100vh - 73px);
+  flex: 1; min-height: 0;
+  display: grid; grid-template-columns: 300px 1fr; grid-template-rows: minmax(0, 1fr);
   overflow: hidden;                /* layout itself does not scroll */
 }
 aside {
   border-right: 1px solid var(--border);
   overflow-y: auto;                /* sidebar scrolls independently */
-  height: 100%;                   /* fill the full layout height */
+  min-height: 0;
   padding: 16px 14px; display: flex; flex-direction: column; gap: 12px;
 }
-main { overflow-y: auto; height: 100%; padding: 20px 24px; }
+main { overflow-y: auto; min-height: 0; padding: 20px 24px; }
 
 .card { background:var(--surface); border:1px solid var(--border); border-radius:10px; overflow:hidden; flex-shrink:0; }
 .card-head {
   padding:10px 14px; border-bottom:1px solid var(--border);
   font-size:.75rem; font-family:var(--mono); letter-spacing:.12em;
   color:var(--muted); text-transform:uppercase;
-  display:flex; align-items:center; gap:8px;
+  display:flex; align-items:center; flex-wrap:wrap; gap:4px 8px;
 }
 .card-head svg { width:14px;height:14px;opacity:.6; }
+.card-head .caption { margin-left:auto; font-size:.67rem; opacity:.6; letter-spacing:.06em; }
 .card-body { padding:12px; display:flex; flex-direction:column; gap:9px; }
 
 .field label {
   display:block; font-size:.78rem; font-weight:600; letter-spacing:.04em;
   color:var(--muted); text-transform:uppercase; margin-bottom:4px;
 }
-input[type=text], input[type=password], input[type=number] {
+input[type=text], input[type=password], input[type=number], select {
   width:100%; background:var(--bg); border:1px solid var(--border);
   border-radius:6px; color:var(--text); font-family:var(--mono);
   font-size:.85rem; padding:6px 10px; outline:none; transition:border-color .15s;
 }
-input[type=text]:focus, input[type=password]:focus, input[type=number]:focus { border-color:var(--accent); }
+select { font-size:.75rem; padding:5px 4px; }
+input:focus, select:focus { border-color:var(--accent); }
 input::placeholder { color:var(--muted); opacity:.5; }
 
 .btn {
@@ -85,28 +93,31 @@ input::placeholder { color:var(--muted); opacity:.5; }
   font-weight:600; cursor:pointer; transition:opacity .15s,transform .1s; letter-spacing:.03em;
 }
 .btn:active { transform:scale(.97); }
+.btn:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
 .btn-primary   { background:var(--accent); color:#ffffff; }
 .btn-secondary { background:transparent; border:1px solid var(--border); color:var(--text); }
 .btn-secondary:hover { border-color:var(--accent2); color:var(--accent2); }
-.btn-danger { background:transparent; border:1px solid var(--danger); color:var(--danger); }
-.btn-danger:hover { background:rgba(255,79,79,.08); }
 .btn-full { width:100%; justify-content:center; }
 .btn:disabled { opacity:.4; cursor:not-allowed; }
+
+.actions { display:flex; flex-direction:column; gap:5px; flex-shrink:0; }
+.hint { font-size:.78rem; color:var(--muted); line-height:1.35; padding:2px 2px 0; }
+.hint b { color:var(--text); font-weight:600; }
 
 #logBox {
   background:var(--bg); border:1px solid var(--border); border-radius:8px;
   padding:10px 12px; font-family:var(--mono); font-size:.8rem; color:var(--text);
-  height:120px; flex-shrink:0; overflow-y:auto;
+  min-height:120px; flex-shrink:0; overflow-y:auto; overflow-wrap:anywhere;
   line-height:1.5; white-space:pre-wrap;
 }
 #logBox.ok  { border-color:var(--accent); color:var(--accent); }
 #logBox.err { border-color:var(--danger); color:var(--danger); }
 
-/* ── Combined table: drag | key | label1 | label2 | icon | sec | effect | toggle | count ── */
+/* ── Mode table: drag | key | label1 | label2 | icon | sec | effect | toggle | count ── */
 .mode-header,
 .mode-row {
   display: grid;
-  grid-template-columns: 22px 80px 1fr 1fr 72px 44px 100px 32px 76px;
+  grid-template-columns: 26px 100px minmax(0,1fr) minmax(0,1fr) 88px 52px 136px 36px 84px;
   gap: 6px;
   align-items: center;
 }
@@ -118,15 +129,19 @@ input::placeholder { color:var(--muted); opacity:.5; }
 #modeList { display:flex; flex-direction:column; gap:5px; }
 .mode-row {
   background:var(--surface); border:1px solid var(--border);
-  border-radius:8px; padding:7px 10px; cursor:grab;
+  border-radius:8px; padding:7px 10px;
   transition:border-color .15s, background .15s;
 }
-.mode-row:active { cursor:grabbing; }
 .mode-row.sortable-ghost { opacity:.3; }
 .mode-row.sortable-drag  { background:#1c2535; border-color:var(--accent2); box-shadow:0 4px 20px rgba(0,0,0,.4); }
 .mode-row.is-sum { background:rgba(80,126,174,.04); border-color:rgba(80,126,174,.14); }
 
-.drag-handle { color:var(--muted); font-size:.9rem; text-align:center; user-select:none; }
+.drag-handle {
+  display:block; text-align:center; color:var(--muted); font-size:1rem; line-height:1;
+  cursor:grab; user-select:none; border-radius:4px; padding:4px 0; outline:none;
+}
+.drag-handle:active { cursor:grabbing; }
+.drag-handle:focus-visible { outline:2px solid var(--accent); color:var(--accent); }
 .mode-key {
   font-family:var(--mono); font-size:.74rem; color:var(--accent);
   background:rgba(80,126,174,.08); border-radius:4px; padding:3px 6px;
@@ -135,6 +150,8 @@ input::placeholder { color:var(--muted); opacity:.5; }
 .mode-row.is-sum .mode-key { color:var(--accent2); background:rgba(58,100,145,.15); }
 .mode-row input[type=text], .mode-row input[type=number] { padding:5px 7px; font-size:.8rem; }
 .mode-row input[type=number] { text-align:right; }
+.cell { display:block; min-width:0; }
+.cell .cap { display:none; }       /* captions only in the compact layout */
 
 .live-count {
   font-family:var(--mono); font-size:.98rem; font-weight:700;
@@ -145,10 +162,13 @@ input::placeholder { color:var(--muted); opacity:.5; }
 .live-count.flash   { color:#fff; }
 
 .toggle { position:relative; width:30px; height:17px; flex-shrink:0; margin:auto; display:block; }
-.toggle input { display:none; }
+.toggle input {                    /* invisible but focusable for keyboard users */
+  position:absolute; inset:0; width:100%; height:100%; margin:0;
+  opacity:0; cursor:pointer; z-index:1;
+}
 .toggle-slider {
   position:absolute; inset:0; background:var(--border);
-  border-radius:9px; cursor:pointer; transition:background .2s;
+  border-radius:9px; transition:background .2s;
 }
 .toggle-slider::after {
   content:''; position:absolute; width:11px; height:11px;
@@ -157,25 +177,63 @@ input::placeholder { color:var(--muted); opacity:.5; }
 }
 .toggle input:checked ~ .toggle-slider { background:rgba(80,126,174,.2); }
 .toggle input:checked ~ .toggle-slider::after { transform:translateX(13px); background:var(--accent); }
+.toggle input:focus-visible ~ .toggle-slider { outline:2px solid var(--accent); outline-offset:2px; }
+
+.visually-hidden {
+  position:absolute; width:1px; height:1px; overflow:hidden;
+  clip:rect(0 0 0 0); white-space:nowrap;
+}
 
 ::-webkit-scrollbar { width:6px; }
 ::-webkit-scrollbar-track { background:transparent; }
 ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
 
+/* Compact rows: three lines per mode with small captions */
+@media (max-width:1180px) {
+  .mode-header { display:none; }
+  .mode-row {
+    grid-template-columns: 26px minmax(0,1fr) minmax(0,1fr) 64px 40px;
+    grid-template-areas:
+      "drag key   key    count count"
+      "drag text1 text2  dur   on"
+      "drag icon  effect effect effect";
+    row-gap: 6px;
+  }
+  .drag-handle { grid-area:drag; align-self:stretch; }
+  .mode-key    { grid-area:key; justify-self:start; max-width:100%; }
+  .live-count  { grid-area:count; }
+  .c-text1     { grid-area:text1; }
+  .c-text2     { grid-area:text2; }
+  .c-dur       { grid-area:dur; }
+  .toggle      { grid-area:on; align-self:end; margin:0 auto 6px; }
+  .c-icon      { grid-area:icon; }
+  .c-effect    { grid-area:effect; }
+  .cell .cap {
+    display:block; font-family:var(--mono); font-size:.62rem; color:var(--muted);
+    text-transform:uppercase; letter-spacing:.08em; margin-bottom:2px;
+  }
+}
+
+/* Small screens: sidebar on top, whole page scrolls */
 @media (max-width:900px) {
-  .layout { grid-template-columns:1fr; height:auto; }
-  aside { border-right:none; border-bottom:1px solid var(--border); }
-  .mode-header, .mode-row { grid-template-columns:22px 74px 1fr 66px 40px 30px 68px; }
-  .f-text2, .mode-header span:nth-child(4) { display:none; }
+  html, body { height:auto; }
+  body { display:block; }
+  header { padding:14px 16px 12px; }
+  header img { height:32px; }
+  header h1 { font-size:1.05rem; }
+  .layout { display:block; overflow:visible; }
+  aside { border-right:none; border-bottom:1px solid var(--border); overflow:visible; padding:16px; }
+  main { overflow:visible; padding:16px; }
+  .card-head .caption { margin-left:0; width:100%; }
 }
 </style>
 </head>
 <body>
 
 <header>
-  <img src="logo.png" alt="WavelogQSOStats2Awtrix" style="height:40px;width:auto;">
-  <h1 style="font-size:1.3rem;font-weight:700;letter-spacing:.04em;color:#fff;">Wavelog<span style="color:var(--accent);">QSOStats</span>2Awtrix</h1>
-  <div class="status-pill" id="statusPill">
+  <img src="logo.png" alt="WavelogQSOStats2Awtrix">
+  <h1>Wavelog<span>QSOStats</span>2Awtrix</h1>
+  <div class="status-pill" id="statusPill" role="status">
     <span class="dot"></span><span id="statusText">Waiting</span>
   </div>
 </header>
@@ -190,10 +248,10 @@ input::placeholder { color:var(--muted); opacity:.5; }
         Wavelog
       </div>
       <div class="card-body">
-        <div class="field"><label>Base URL</label><input id="wavelogUrl" type="text" placeholder="https://wavelog.example.com"></div>
-        <div class="field"><label>API Key</label><input id="apiKey" type="password" autocomplete="off" placeholder="Your Wavelog API Key"></div>
+        <div class="field"><label for="wavelogUrl">Base URL</label><input id="wavelogUrl" type="text" placeholder="https://wavelog.example.com"></div>
+        <div class="field"><label for="apiKey">API Key</label><input id="apiKey" type="password" autocomplete="off" placeholder="Your Wavelog API Key"></div>
         <div class="field">
-          <label>Station IDs <small style="text-transform:none;font-weight:400">(comma-separated)</small></label>
+          <label for="stationIds">Station IDs <small style="text-transform:none;font-weight:400">(comma-separated)</small></label>
           <input id="stationIds" type="text" placeholder="1, 2">
         </div>
       </div>
@@ -205,12 +263,12 @@ input::placeholder { color:var(--muted); opacity:.5; }
         Awtrix
       </div>
       <div class="card-body">
-        <div class="field"><label>Awtrix IP</label><input id="awtrixIp" type="text" placeholder="192.168.x.x"></div>
-        <div class="field"><label>Fetch Interval (seconds)</label><input id="fetchInterval" type="number" value="300" min="10" max="86400"></div>
+        <div class="field"><label for="awtrixIp">Awtrix IP</label><input id="awtrixIp" type="text" placeholder="192.168.x.x"></div>
+        <div class="field"><label for="fetchInterval">Fetch Interval (seconds)</label><input id="fetchInterval" type="number" value="300" min="10" max="86400"></div>
       </div>
     </div>
 
-    <div style="display:flex;flex-direction:column;gap:5px;flex-shrink:0">
+    <div class="actions">
       <button class="btn btn-primary btn-full" id="saveBtn">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
         Save Configuration
@@ -219,6 +277,10 @@ input::placeholder { color:var(--muted); opacity:.5; }
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
         Save &amp; Push to Awtrix
       </button>
+      <p class="hint">
+        <b>Save</b> updates the clock with the next fetch (every <span id="hintInterval">300</span> s).
+        <b>Save &amp; Push</b> updates it right away.
+      </p>
       <button class="btn btn-secondary btn-full" id="testBtn">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         Test Wavelog API
@@ -229,7 +291,7 @@ input::placeholder { color:var(--muted); opacity:.5; }
       </button>
     </div>
 
-    <div id="logBox">Ready.</div>
+    <div id="logBox" aria-live="polite">Ready.</div>
   </aside>
 
   <!-- Main -->
@@ -238,10 +300,10 @@ input::placeholder { color:var(--muted); opacity:.5; }
       <div class="card-head">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
         Display Modes &amp; Live QSO Statistics
-        <span style="margin-left:auto;font-size:.67rem;opacity:.4">drag to reorder &nbsp;·&nbsp; rightmost column = live count after API test</span>
+        <span class="caption">drag ⠿ (or arrow keys) to reorder &nbsp;·&nbsp; QSO counts appear after an API test</span>
       </div>
       <div class="card-body">
-        <div class="mode-header">
+        <div class="mode-header" aria-hidden="true">
           <span></span>
           <span>Mode</span>
           <span>Label 1</span>
@@ -262,6 +324,8 @@ input::placeholder { color:var(--muted); opacity:.5; }
 <script src="/vendor/Sortable.min.js"></script>
 <script>
 const SUM_KEYS = new Set(['totalQso','totalQsoYear','ft8ft4','digi']);
+const $ = id => document.getElementById(id);
+let lastStats = null;   // last fetched stats, re-applied after the table is re-rendered
 
 // JSON request to the backend; throws with the server's message on HTTP errors
 async function api(method,url,body){
@@ -276,72 +340,89 @@ async function api(method,url,body){
   return data;
 }
 
+function setStatus(state,text){
+  $('statusPill').className='status-pill '+(state||'');
+  $('statusText').textContent=text;
+}
+function log(msg,cls){
+  const b=$('logBox');
+  b.textContent=msg; b.className=cls||'';
+}
+function esc(s){
+  return String(s??'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// Runs one action at a time: all buttons stay disabled until it has finished,
+// so e.g. a push and an icon upload can't hit the clock in parallel.
+async function runAction(fn){
+  const buttons=document.querySelectorAll('.actions .btn');
+  buttons.forEach(b=>b.disabled=true);
+  try{ await fn(); }
+  finally{ buttons.forEach(b=>b.disabled=false); }
+}
+
+// ── Form ─────────────────────────────────────────────────────────────────────
+
 function setApiKeyPlaceholder(isSet){
-  document.getElementById('apiKey').placeholder=isSet
-    ? '•••••••• saved – leave empty to keep'
-    : 'Your Wavelog API Key';
+  $('apiKey').placeholder=isSet ? 'saved – leave empty to keep' : 'Your Wavelog API Key';
 }
 
 function collectConfig(){
   return {
-    wavelogBaseUrl:document.getElementById('wavelogUrl').value.trim(),
-    apiKey:        document.getElementById('apiKey').value.trim(),
-    stationIds:    document.getElementById('stationIds').value.split(',').map(s=>s.trim()).filter(Boolean),
-    awtrixUrl:     document.getElementById('awtrixIp').value.trim(),
-    fetchInterval: Number(document.getElementById('fetchInterval').value)||300,
+    wavelogBaseUrl:$('wavelogUrl').value.trim(),
+    apiKey:        $('apiKey').value.trim(),
+    stationIds:    $('stationIds').value.split(',').map(s=>s.trim()).filter(Boolean),
+    awtrixUrl:     $('awtrixIp').value.trim(),
+    fetchInterval: Number($('fetchInterval').value)||300,
     displayItems:  collectModes(),
   };
 }
 
+// Shows a config as stored on the server (normalized URLs, clamped numbers)
+async function fillForm(c){
+  $('wavelogUrl').value   =c.wavelogBaseUrl||'';
+  $('apiKey').value       ='';
+  setApiKeyPlaceholder(c.apiKeySet);
+  $('stationIds').value   =(c.stationIds||[]).join(', ');
+  $('awtrixIp').value     =c.awtrixUrl||'';
+  $('fetchInterval').value=c.fetchInterval||300;
+  $('hintInterval').textContent=c.fetchInterval||300;
+  renderModes(c.displayItems||[]);
+  if(lastStats) updateLiveCounts(lastStats,false);
+  await loadEffects(c.displayItems||[]);
+}
+
 async function saveConfig(){
-  const cfg=collectConfig();
-  await api('POST','/api/save',cfg);
-  if(cfg.apiKey){
-    document.getElementById('apiKey').value='';
-    setApiKeyPlaceholder(true);
-  }
+  const data=await api('POST','/api/save',collectConfig());
+  // reload from the saved config – also refreshes the effect list for a new Awtrix IP
+  await fillForm(data.config);
 }
 
-new Sortable(document.getElementById('modeList'),{
-  animation:150, handle:'.drag-handle',
-  ghostClass:'sortable-ghost', dragClass:'sortable-drag'
-});
-
-function setStatus(state,text){
-  const p=document.getElementById('statusPill');
-  p.className='status-pill '+(state||'');
-  document.getElementById('statusText').textContent=text;
-}
-function log(msg,cls){
-  const b=document.getElementById('logBox');
-  b.textContent=msg; b.className=cls||'';
-}
-function esc(s){
-  return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
-}
+// ── Mode table ───────────────────────────────────────────────────────────────
 
 function renderModes(items){
-  const list=document.getElementById('modeList');
+  const list=$('modeList');
   list.innerHTML='';
   items.forEach(item=>{
+    const k=esc(item.key);
     const row=document.createElement('div');
     row.className='mode-row'+(SUM_KEYS.has(item.key)?' is-sum':'');
     row.dataset.key=item.key;
     row.innerHTML=`
-      <span class="drag-handle" title="Drag to reorder">⠿</span>
-      <span class="mode-key">${esc(item.key)}</span>
-      <input type="text"   class="f-text1" value="${esc(item.text1)}" placeholder="Label 1">
-      <input type="text"   class="f-text2" value="${esc(item.text2)}" placeholder="Label 2">
-      <input type="text"   class="f-icon"  value="${esc(item.icon)}"  placeholder="Icon ID">
-      <input type="number" class="f-dur"   value="${Number(item.duration)||10}" min="1" title="Awtrix display duration (s)">
-      <select class="f-effect" title="Background effect" style="background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--mono);font-size:.75rem;padding:5px 4px;width:100%;outline:none;">
+      <span class="drag-handle" role="button" tabindex="0" title="Drag or use arrow keys to reorder" aria-label="Move ${k} (arrow up/down)">⠿</span>
+      <span class="mode-key" title="${k}">${k}</span>
+      <label class="cell c-text1"><span class="cap">Label 1</span><input type="text" class="f-text1" value="${esc(item.text1)}" placeholder="Label 1" aria-label="${k} label 1"></label>
+      <label class="cell c-text2"><span class="cap">Label 2</span><input type="text" class="f-text2" value="${esc(item.text2)}" placeholder="Label 2" aria-label="${k} label 2"></label>
+      <label class="cell c-icon"><span class="cap">Icon</span><input type="text" class="f-icon" value="${esc(item.icon)}" placeholder="Icon ID" title="${esc(item.icon)}" aria-label="${k} icon"></label>
+      <label class="cell c-dur"><span class="cap">Sec</span><input type="number" class="f-dur" value="${Number(item.duration)||10}" min="1" max="3600" title="Awtrix display duration (s)" aria-label="${k} display duration in seconds"></label>
+      <label class="cell c-effect"><span class="cap">Effect</span><select class="f-effect" title="Background effect" aria-label="${k} background effect">
         <option value="">— none —</option>
-      </select>
+      </select></label>
       <label class="toggle" title="Show on Awtrix">
-        <input type="checkbox" class="f-enabled" ${item.enabled?'checked':''}>
+        <input type="checkbox" class="f-enabled" ${item.enabled?'checked':''} aria-label="Show ${k} on Awtrix">
         <span class="toggle-slider"></span>
       </label>
-      <span class="live-count pending" id="lc-${esc(item.key)}">—</span>
+      <span class="live-count pending" data-key="${k}">—</span>
     `;
     list.appendChild(row);
   });
@@ -359,21 +440,6 @@ function collectModes(){
   }));
 }
 
-async function loadConfig(){
-  try{
-    const c=await api('GET','/api/config');
-    document.getElementById('wavelogUrl').value  =c.wavelogBaseUrl||'';
-    document.getElementById('apiKey').value       ='';
-    setApiKeyPlaceholder(c.apiKeySet);
-    document.getElementById('stationIds').value   =(c.stationIds||[]).join(', ');
-    document.getElementById('awtrixIp').value     =c.awtrixUrl||'';
-    document.getElementById('fetchInterval').value=c.fetchInterval||300;
-    renderModes(c.displayItems||[]);
-    await loadEffects(c.displayItems||[]);
-    setStatus('','Config loaded');
-  }catch(err){ log('Failed to load config: '+err.message,'err'); }
-}
-
 async function loadEffects(items){
   let effects=[];
   try{
@@ -382,8 +448,10 @@ async function loadEffects(items){
   }catch(e){
     // Awtrix not reachable – only the saved effects are offered, no error shown
   }
-  document.querySelectorAll('.f-effect').forEach((sel,idx)=>{
-    const current=(items[idx]||{}).effect||'';
+  const byKey=Object.fromEntries(items.map(i=>[i.key,i.effect||'']));
+  document.querySelectorAll('#modeList .mode-row').forEach(row=>{
+    const sel=row.querySelector('.f-effect');
+    const current=byKey[row.dataset.key]||'';
     // keep the "none" option, add all effects
     sel.innerHTML='<option value="">— none —</option>';
     // keep the saved effect even if Awtrix doesn't list it (e.g. clock offline),
@@ -395,48 +463,73 @@ async function loadEffects(items){
       if(name===current) opt.selected=true;
       sel.appendChild(opt);
     });
+    sel.title=current||'Background effect';
   });
 }
 
-function updateLiveCounts(stats){
+function updateLiveCounts(stats,flash=true){
+  lastStats=stats;
   document.querySelectorAll('.live-count').forEach(el=>{
-    const key=el.id.replace('lc-','');
-    const val=stats[key];
+    const val=stats[el.dataset.key];
     if(val===undefined) return;
-    el.textContent=val.toLocaleString('de-DE');
+    el.textContent=Number(val).toLocaleString();
     el.classList.remove('pending');
-    el.classList.add('flash');
-    setTimeout(()=>el.classList.remove('flash'),500);
+    if(flash){
+      el.classList.add('flash');
+      setTimeout(()=>el.classList.remove('flash'),500);
+    }
   });
 }
 
-document.getElementById('saveBtn').addEventListener('click',async()=>{
-  const btn=document.getElementById('saveBtn');
-  btn.disabled=true; log('Saving…');
-  try{
-    await saveConfig();
-    log('Configuration saved ✅','ok'); setStatus('ok','Saved');
-  }catch(err){ log('Save failed: '+err.message,'err'); setStatus('err','Error'); }
-  btn.disabled=false;
+new Sortable($('modeList'),{
+  animation:150, handle:'.drag-handle',
+  ghostClass:'sortable-ghost', dragClass:'sortable-drag'
 });
 
-document.getElementById('testBtn').addEventListener('click',async()=>{
-  const btn=document.getElementById('testBtn');
-  btn.disabled=true; log('Testing Wavelog API…'); setStatus('','Testing…');
+// Keyboard reordering on the drag handle
+$('modeList').addEventListener('keydown',e=>{
+  const handle=e.target.closest('.drag-handle');
+  if(!handle) return;
+  const row=handle.closest('.mode-row');
+  if(e.key==='ArrowUp' && row.previousElementSibling){
+    row.parentNode.insertBefore(row,row.previousElementSibling);
+  }else if(e.key==='ArrowDown' && row.nextElementSibling){
+    row.parentNode.insertBefore(row.nextElementSibling,row);
+  }else return;
+  e.preventDefault();
+  handle.focus();
+});
+
+// Update the select tooltip when an effect is picked (long names are clipped)
+$('modeList').addEventListener('change',e=>{
+  if(e.target.classList.contains('f-effect')) e.target.title=e.target.value||'Background effect';
+});
+
+// ── Actions ──────────────────────────────────────────────────────────────────
+
+$('saveBtn').addEventListener('click',()=>runAction(async()=>{
+  log('Saving…'); setStatus('','Saving…');
   try{
-    const data=await api('POST','/api/test');
+    await saveConfig();
+    log('Configuration saved ✅  The clock is updated with the next fetch.','ok'); setStatus('ok','Saved');
+  }catch(err){ log('Save failed: '+err.message,'err'); setStatus('err','Error'); }
+}));
+
+$('testBtn').addEventListener('click',()=>runAction(async()=>{
+  log('Testing Wavelog API…'); setStatus('','Testing…');
+  try{
+    // tests the values currently in the form, saved or not
+    const data=await api('POST','/api/test',collectConfig());
     log(data.message,'ok'); setStatus('ok','API OK');
     if(data.stats) updateLiveCounts(data.stats);
   }catch(err){
     log('Test failed: '+err.message,'err');
     setStatus('err','API Error');
   }
-  btn.disabled=false;
-});
+}));
 
-document.getElementById('savePushBtn').addEventListener('click',async()=>{
-  const btn=document.getElementById('savePushBtn');
-  btn.disabled=true; log('Saving…'); setStatus('','Saving…');
+$('savePushBtn').addEventListener('click',()=>runAction(async()=>{
+  log('Saving…'); setStatus('','Saving…');
   try{
     // 1. Save
     await saveConfig();
@@ -450,15 +543,13 @@ document.getElementById('savePushBtn').addEventListener('click',async()=>{
     log('Failed: '+err.message,'err');
     setStatus('err','Error');
   }
-  btn.disabled=false;
-});
+}));
 
-document.getElementById('iconUploadBtn').addEventListener('click',async()=>{
-  const btn=document.getElementById('iconUploadBtn');
-  btn.disabled=true;
+$('iconUploadBtn').addEventListener('click',()=>runAction(async()=>{
   log('Uploading icons to Awtrix…'); setStatus('','Uploading…');
   try{
-    const d=await api('POST','/api/upload-icons');
+    // uses the Awtrix IP currently in the form, saved or not
+    const d=await api('POST','/api/upload-icons',{awtrixUrl:$('awtrixIp').value.trim()});
     // Build summary line + per-file detail
     let detail=d.message+'\n';
     if(d.results){
@@ -473,10 +564,14 @@ document.getElementById('iconUploadBtn').addEventListener('click',async()=>{
     log('Icon upload failed: '+err.message,'err');
     setStatus('err','Upload Error');
   }
-  btn.disabled=false;
-});
+}));
 
-loadConfig();
+(async function init(){
+  try{
+    await fillForm(await api('GET','/api/config'));
+    setStatus('','Config loaded');
+  }catch(err){ log('Failed to load config: '+err.message,'err'); setStatus('err','Error'); }
+})();
 </script>
 </body>
 </html>

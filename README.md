@@ -211,8 +211,10 @@ The app runs a continuous background loop:
 
 1. Reads the current config (picks up any changes saved in the UI without a restart)
 2. Fetches QSO statistics from Wavelog
-3. Pushes each enabled mode as a named custom app to Awtrix
+3. Pushes each enabled mode as a named custom app to Awtrix. If modes were enabled, disabled or reordered since the last push, all `wavelog_*` apps are removed first so the clock shows the new order
 4. Waits for `fetchInterval` seconds, then repeats
+
+**Save Configuration** therefore reaches the clock with the next cycle, **Save & Push to Awtrix** applies it immediately. **Test Wavelog API** and **Upload Icons to Awtrix** use the values currently entered in the form, even if they are not saved yet.
 
 Each Awtrix app has a `lifetime` of `2 × fetchInterval` seconds. If the server stops, the displays disappear from the clock automatically after that time.
 

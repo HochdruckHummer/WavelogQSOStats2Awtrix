@@ -207,10 +207,35 @@ app.get('/vendor/Sortable.min.js', (req, res) => {
 
 // ─── REST API ─────────────────────────────────────────────────────────────────
 
-// GET /api/config  – the API key itself never leaves the server
+// The API key itself never leaves the server
+function publicConfig(config) {
+  return { ...config, apiKey: "", apiKeySet: Boolean(config.apiKey) };
+}
+
+// Wavelog URL, API key and station IDs from a request body. Without a URL in the
+// body the stored settings are used. An empty API key field keeps the stored key –
+// but only for the same Wavelog server, so it can never be redirected to another host.
+function resolveWavelogSettings(body, config) {
+  if (body.wavelogBaseUrl === undefined) {
+    return { wavelogBaseUrl: config.wavelogBaseUrl, apiKey: config.apiKey, stationIds: config.stationIds };
+  }
+  const wavelogBaseUrl = normalizeWavelogUrl(body.wavelogBaseUrl);
+  const newApiKey = cleanText(body.apiKey, 200);
+  let storedUrl = "";
+  try { storedUrl = normalizeWavelogUrl(config.wavelogBaseUrl); } catch { /* invalid legacy value */ }
+  if (!newApiKey && config.apiKey && wavelogBaseUrl && wavelogBaseUrl !== storedUrl) {
+    throw new ValidationError("Please re-enter the API key when changing the Wavelog URL");
+  }
+  return {
+    wavelogBaseUrl,
+    apiKey:     newApiKey || config.apiKey,
+    stationIds: Array.isArray(body.stationIds) ? body.stationIds.map(s => cleanText(s, 20)).filter(Boolean) : [],
+  };
+}
+
+// GET /api/config
 app.get('/api/config', (req, res) => {
-  const config = loadConfig();
-  res.json({ ...config, apiKey: "", apiKeySet: Boolean(config.apiKey) });
+  res.json(publicConfig(loadConfig()));
 });
 
 // POST /api/save
@@ -218,26 +243,17 @@ app.post('/api/save', (req, res) => {
   const config = loadConfig();
   const body = req.body || {};
 
-  let wavelogBaseUrl, awtrixUrl;
+  let wavelog, awtrixUrl;
   try {
-    wavelogBaseUrl = normalizeWavelogUrl(body.wavelogBaseUrl);
-    awtrixUrl      = normalizeAwtrixHost(body.awtrixUrl);
+    wavelog   = resolveWavelogSettings(body, config);
+    awtrixUrl = normalizeAwtrixHost(body.awtrixUrl);
   } catch (err) {
     return res.status(400).json({ success: false, message: err.message });
   }
 
-  // An empty API key field keeps the stored key – but only for the same Wavelog
-  // server, so the stored key can never be redirected to a different host.
-  const newApiKey = cleanText(body.apiKey, 200);
-  let storedUrl = "";
-  try { storedUrl = normalizeWavelogUrl(config.wavelogBaseUrl); } catch { /* invalid legacy value */ }
-  if (!newApiKey && config.apiKey && wavelogBaseUrl && wavelogBaseUrl !== storedUrl) {
-    return res.status(400).json({ success: false, message: "Please re-enter the API key when changing the Wavelog URL" });
-  }
-
-  config.wavelogBaseUrl = wavelogBaseUrl;
-  config.apiKey         = newApiKey || config.apiKey;
-  config.stationIds     = Array.isArray(body.stationIds) ? body.stationIds.map(s => cleanText(s, 20)).filter(Boolean) : [];
+  config.wavelogBaseUrl = wavelog.wavelogBaseUrl;
+  config.apiKey         = wavelog.apiKey;
+  config.stationIds     = wavelog.stationIds;
   config.awtrixUrl      = awtrixUrl;
   config.fetchInterval  = clamp(body.fetchInterval, MIN_FETCH_INTERVAL, MAX_FETCH_INTERVAL, defaultConfig.fetchInterval);
 
@@ -269,7 +285,8 @@ app.post('/api/save', (req, res) => {
 
   try {
     saveConfig(clean);
-    res.json({ success: true });
+    // Return what was actually stored (normalized/clamped) so the UI can show it
+    res.json({ success: true, config: publicConfig(clean) });
   } catch (err) {
     console.error("Save config failed:", err.message);
     res.status(500).json({ success: false, message: "Could not write configuration file (see server log)" });
@@ -277,15 +294,22 @@ app.post('/api/save', (req, res) => {
 });
 
 // POST /api/test  – fetch stats and return them
+// Uses the Wavelog settings from the request body (unsaved form values) if given.
 app.post('/api/test', async (req, res) => {
   const config = loadConfig();
 
-  if (!config.apiKey || !config.stationIds.length || !config.wavelogBaseUrl) {
+  let wavelog;
+  try {
+    wavelog = resolveWavelogSettings(req.body || {}, config);
+  } catch (err) {
+    return res.status(400).json({ success: false, message: err.message });
+  }
+  if (!wavelog.apiKey || !wavelog.stationIds.length || !wavelog.wavelogBaseUrl) {
     return res.status(400).json({ success: false, message: "Missing Wavelog URL, API Key or Station IDs" });
   }
 
   try {
-    const stats = await fetchStats(config);
+    const stats = await fetchStats({ ...config, ...wavelog });
     res.json({ success: true, message: "API Test successful ✅", stats });
   } catch (err) {
     console.error("API test failed:", err.message);
@@ -303,6 +327,7 @@ app.post('/api/push', async (req, res) => {
     const stats = await fetchStats(config);
     await clearAllWavelogApps(config);
     const pushed = await pushToAwtrix(config, stats);
+    lastPushedOrder = enabledOrder(config);
     res.json({ success: true, message: `Pushed ${pushed} item(s) to Awtrix ✅`, stats });
   } catch (err) {
     res.status(502).json({ success: false, message: "Push failed: " + err.message });
@@ -358,8 +383,10 @@ app.post('/api/clear-apps', async (req, res) => {
 });
 
 // POST /api/upload-icons  – upload all icons from AmateurRadioIcons/ to Awtrix
+// Uses the Awtrix address from the request body (unsaved form value) if given.
 app.post('/api/upload-icons', async (req, res) => {
   const config = loadConfig();
+  if (req.body?.awtrixUrl !== undefined) config.awtrixUrl = req.body.awtrixUrl;
   if (!config.awtrixUrl) {
     return res.status(400).json({ success: false, message: "Awtrix URL not configured" });
   }
@@ -561,11 +588,19 @@ async function clearAllWavelogApps(config) {
   console.log("[Loop] Stale apps cleared.");
 }
 
+// Awtrix shows custom apps in creation order and keeps disabled ones until their
+// lifetime expires – so whenever the enabled items or their order change, all
+// apps are cleared and re-created. null = nothing pushed yet since (re)start.
+let lastPushedOrder = null;
+
+function enabledOrder(config) {
+  return `${config.awtrixUrl}|` + config.displayItems.filter(i => i.enabled).map(i => i.key).join(',');
+}
+
 // ─── Background Push Loop ─────────────────────────────────────────────────────
 
 async function awtrixPushLoop() {
   console.log("[Loop] Awtrix push loop started");
-  let firstRun = true;
 
   // eslint-disable-next-line no-constant-condition
   while (true) {
@@ -582,15 +617,16 @@ async function awtrixPushLoop() {
       // keeps showing the last values until their lifetime expires.
       const stats = await fetchStats(config);
 
-      // On first run after (re)start: clear all wavelog apps first so stale
-      // apps from a previous run are removed and order is correct from the start.
-      if (firstRun) {
-        console.log("[Loop] First run – clearing stale Awtrix apps…");
+      // After (re)start or a change of enabled items/order: clear all wavelog
+      // apps first so stale apps disappear and the order on the clock is correct.
+      const order = enabledOrder(config);
+      if (order !== lastPushedOrder) {
+        console.log("[Loop] Display items changed or first run – clearing Awtrix apps…");
         await clearAllWavelogApps(config);
-        firstRun = false;
       }
 
       await pushToAwtrix(config, stats);
+      lastPushedOrder = order;
     } catch (err) {
       console.error("[Loop] Cycle error, nothing pushed:", err.message);
     }
