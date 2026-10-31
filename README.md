@@ -25,7 +25,7 @@ https://youtu.be/kS_QYKCJ7ps
 ## 🖥️ Prerequisites
 
 * A running [Wavelog](https://github.com/wavelog/wavelog) instance with API access enabled
-* A [Ulanzi TC001 Pixel Clock](https://geni.us/ulanzi-pixelclock) *(Amazon Affiliate Link)* flashed with [Awtrix3 firmware](https://github.com/Blueforcer/awtrix3)
+* A [Ulanzi TC001 Pixel Clock]([https://geni.us/ulanzi-pixelclock](https://www.amazon.de/ULANZI-TC001-Digitaler-Anzeigetafel-Nachttisch/dp/B0CXX91TY5?crid=TYBTAI1PHOF8&dib=eyJ2IjoiMSJ9.59_9HrfzGUEgs9uDH-DKhf2pHv5pzsy2U56xyqR8oN-WR7Qoknvc6jf_jKAIOw9vXwO-WxmAVQ1NkqLYV3DFglKCfKI0wf33CopB9NJu3LdmYMA6Fe4-b3-9lTfjsZV1B2FLGjaiuHYBWgj52KMfMlozMXrQU-NyGhDdOGP5UPlH1Ko6axe_K1iQDEWDo3yOqx8PB83iyyEE7pU016i-ZFnZ67OYQIncvl0kMa5GbeIsZw8NZ4ClOUhihgFMdGxISDiWsIveb6a9v7P1gDfqfQuUeuar6K60AGz4wNIEOJg.sNdguuVRB-KL1-RAbJrEU7AkogA8fPrVGR19NRlKmOk&dib_tag=se&keywords=ulanzi+pixel+clock&qid=1793452741&sprefix=ulanzi+pixel%2Caps%2C231&sr=8-4&linkCode=ll2&tag=yt_dantut_foto-21&linkId=f01ff4c7ee0e56ecaf1524aee93df546&gaOptInStatus=true&ref_=as_li_ss_tl)) *(Amazon Affiliate Link)* flashed with [Awtrix3 firmware](https://github.com/Blueforcer/awtrix3)
 * One of the following to run the app:
   * Node.js v18 or newer, **or**
   * Docker / Docker Compose, **or**
